@@ -1,0 +1,30 @@
+name: Deploy to King's Landing
+description: Deploy a directory to King's Landing
+branding:
+  icon: upload-cloud
+  color: blue
+
+inputs:
+  project:
+    description: Project name on King's Landing
+    required: true
+  directory:
+    description: Path to the directory to deploy
+    required: true
+  deploy-key:
+    description: Project deploy key (kl_...)
+    required: true
+  api-url:
+    description: King's Landing API URL
+    required: false
+    default: https://api.kingslanding.io
+
+outputs:
+  deployment-id:
+    description: The deployment ID
+  project-url:
+    description: The live project URL
+
+runs:
+  using: node20
+  main: src/index.js
