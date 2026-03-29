@@ -1,17 +1,7 @@
 {
   "name": "deploy-to-kingslanding",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "build": "ncc build src/index.js -o dist",
-    "test": "vitest run"
-  },
-  "dependencies": {
-    "@actions/core": "^1.11.1"
-  },
-  "devDependencies": {
-    "@vercel/ncc": "^0.38.4",
-    "vitest": "^3.0.0"
-  }
+  "description": "GitHub Action to deploy a static site to King's Landing",
+  "license": "MIT",
+  "private": true
 }
