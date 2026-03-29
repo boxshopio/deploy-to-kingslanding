@@ -1,30 +1,41 @@
 name: Deploy to King's Landing
-description: Deploy a directory to King's Landing
-branding:
-  icon: upload-cloud
-  color: blue
+description: Deploy a static site to King's Landing
 
 inputs:
   project:
     description: Project name on King's Landing
     required: true
   directory:
-    description: Path to the directory to deploy
+    description: Directory to deploy
     required: true
   deploy-key:
-    description: Project deploy key (kl_...)
+    description: Deploy key for authentication
     required: true
   api-url:
-    description: King's Landing API URL
+    description: API URL override
     required: false
-    default: https://api.kingslanding.io
 
 outputs:
   deployment-id:
     description: The deployment ID
+    value: ${{ steps.deploy.outputs.deployment-id }}
   project-url:
     description: The live project URL
+    value: ${{ steps.deploy.outputs.project-url }}
 
 runs:
-  using: node20
-  main: dist/index.js
+  using: composite
+  steps:
+    - name: Deploy
+      id: deploy
+      shell: bash
+      run: |
+        OUTPUT=$(npx --yes @kingslanding/cli@^1 deploy "${{ inputs.directory }}" \
+          --project "${{ inputs.project }}" \
+          --json 2>/dev/null)
+        echo "deployment-id=$(echo "$OUTPUT" | jq -r '.deployment_id')" >> "$GITHUB_OUTPUT"
+        echo "project-url=$(echo "$OUTPUT" | jq -r '.project_url')" >> "$GITHUB_OUTPUT"
+        echo "Deployed to $(echo "$OUTPUT" | jq -r '.project_url')"
+      env:
+        KL_DEPLOY_KEY: ${{ inputs.deploy-key }}
+        KL_API_URL: ${{ inputs.api-url }}

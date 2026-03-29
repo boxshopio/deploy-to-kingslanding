@@ -2,6 +2,8 @@
 
 A GitHub Action that deploys a directory to [King's Landing](https://kingslanding.io).
 
+This action is a thin composite wrapper around [`@kingslanding/cli`](https://www.npmjs.com/package/@kingslanding/cli). It runs `npx @kingslanding/cli deploy` internally, which uses presigned S3 uploads with parallel file transfers and automatic retries.
+
 ## Usage
 
 ```yaml
@@ -20,7 +22,7 @@ A GitHub Action that deploys a directory to [King's Landing](https://kingslandin
 | `project` | Yes | — | Project name on King's Landing |
 | `directory` | Yes | — | Path to the directory to deploy |
 | `deploy-key` | Yes | — | Project deploy key (`kl_...`) |
-| `api-url` | No | `https://api.kingslanding.io` | King's Landing API URL |
+| `api-url` | No | — | King's Landing API URL override |
 
 ## Outputs
 
@@ -39,10 +41,3 @@ A GitHub Action that deploys a directory to [King's Landing](https://kingslandin
 ## Example
 
 See [deploy-to-kingslanding-example](https://github.com/boxshopio/deploy-to-kingslanding-example) for a complete working example.
-
-## File Handling
-
-- Text files (HTML, CSS, JS, JSON, SVG, etc.) are uploaded as UTF-8
-- Binary files (images, fonts, WASM, etc.) are base64-encoded automatically
-- Dotfiles, `node_modules`, and `.git` directories are skipped
-- Maximum payload size: 9MB (see [#209](https://github.com/boxshopio/kingslanding/issues/209) for larger projects)
