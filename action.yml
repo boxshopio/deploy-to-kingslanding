@@ -35,9 +35,14 @@ runs:
         KL_DIRECTORY: ${{ inputs.directory }}
         KL_PROJECT: ${{ inputs.project }}
       run: |
-        OUTPUT=$(npx --yes @kingslanding/cli@^1 deploy "$KL_DIRECTORY" \
-          --project "$KL_PROJECT" \
-          --json 2>/dev/null)
+        STDERR_LOG=$(mktemp)
+        if ! OUTPUT=$(npx --yes @kingslanding/cli@^0.2.0 deploy "$KL_DIRECTORY" \
+            --project "$KL_PROJECT" \
+            --json 2>"$STDERR_LOG"); then
+          echo "::error title=kl deploy failed::see captured stderr below"
+          cat "$STDERR_LOG" >&2
+          exit 1
+        fi
         DEPLOYMENT_ID=$(printf '%s' "$OUTPUT" | jq -r '.deployment_id')
         PROJECT_URL=$(printf '%s' "$OUTPUT" | jq -r '.project_url')
         {
