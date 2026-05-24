@@ -29,13 +29,26 @@ runs:
     - name: Deploy
       id: deploy
       shell: bash
-      run: |
-        OUTPUT=$(npx --yes @kingslanding/cli@^1 deploy "${{ inputs.directory }}" \
-          --project "${{ inputs.project }}" \
-          --json 2>/dev/null)
-        echo "deployment-id=$(echo "$OUTPUT" | jq -r '.deployment_id')" >> "$GITHUB_OUTPUT"
-        echo "project-url=$(echo "$OUTPUT" | jq -r '.project_url')" >> "$GITHUB_OUTPUT"
-        echo "Deployed to $(echo "$OUTPUT" | jq -r '.project_url')"
       env:
         KL_DEPLOY_KEY: ${{ inputs.deploy-key }}
         KL_API_URL: ${{ inputs.api-url }}
+        KL_DIRECTORY: ${{ inputs.directory }}
+        KL_PROJECT: ${{ inputs.project }}
+      run: |
+        OUTPUT=$(npx --yes @kingslanding/cli@^1 deploy "$KL_DIRECTORY" \
+          --project "$KL_PROJECT" \
+          --json 2>/dev/null)
+        DEPLOYMENT_ID=$(printf '%s' "$OUTPUT" | jq -r '.deployment_id')
+        PROJECT_URL=$(printf '%s' "$OUTPUT" | jq -r '.project_url')
+        {
+          echo "deployment-id=$DEPLOYMENT_ID"
+          echo "project-url=$PROJECT_URL"
+        } >> "$GITHUB_OUTPUT"
+        echo "Deployed to $PROJECT_URL"
+        {
+          echo "### King's Landing deploy"
+          echo ""
+          echo "- **URL:** [$PROJECT_URL]($PROJECT_URL)"
+          echo "- **Deployment:** \`$DEPLOYMENT_ID\`"
+        } >> "$GITHUB_STEP_SUMMARY"
+        echo "::notice title=Deployed::$PROJECT_URL"
