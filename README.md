@@ -8,7 +8,7 @@ This action is a thin composite wrapper around [`@kingslanding/cli`](https://www
 
 ```yaml
 - name: Deploy to King's Landing
-  uses: boxshopio/deploy-to-kingslanding@v1
+  uses: boxshopio/deploy-to-kingslanding@v2
   with:
     project: my-project
     directory: ./dist
@@ -23,6 +23,21 @@ This action is a thin composite wrapper around [`@kingslanding/cli`](https://www
 | `directory` | Yes | — | Path to the directory to deploy |
 | `deploy-key` | Yes | — | Project deploy key (`kl_...`) |
 | `api-url` | No | — | King's Landing API URL override |
+| `cli-version` | No | `^0.3.0` | Version of `@kingslanding/cli` to install — an exact version (`0.3.0`), a range (`^0.3.0`), or `latest` |
+
+### Choosing a CLI version
+
+By default the action installs the latest `0.3.x` release of `@kingslanding/cli`, so patch fixes are picked up automatically while breaking changes are held back. To make deploys fully reproducible, pin an exact version:
+
+```yaml
+  with:
+    project: my-project
+    directory: ./dist
+    deploy-key: ${{ secrets.KL_DEPLOY_KEY }}
+    cli-version: 0.3.0
+```
+
+To always track the newest CLI (and accept breaking changes as they ship), set `cli-version: latest`.
 
 ## Outputs
 

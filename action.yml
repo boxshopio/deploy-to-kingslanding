@@ -14,6 +14,13 @@ inputs:
   api-url:
     description: API URL override
     required: false
+  cli-version:
+    description: >-
+      Version of @kingslanding/cli to install (npm spec: an exact version like
+      '0.3.0', a range like '^0.3.0', or 'latest'). Pin an exact version for
+      reproducible deploys.
+    required: false
+    default: "^0.3.0"
 
 outputs:
   deployment-id:
@@ -34,9 +41,10 @@ runs:
         KL_API_URL: ${{ inputs.api-url }}
         KL_DIRECTORY: ${{ inputs.directory }}
         KL_PROJECT: ${{ inputs.project }}
+        KL_CLI_VERSION: ${{ inputs.cli-version }}
       run: |
         STDERR_LOG=$(mktemp)
-        if ! OUTPUT=$(npx --yes @kingslanding/cli@^0.2.0 deploy "$KL_DIRECTORY" \
+        if ! OUTPUT=$(npx --yes "@kingslanding/cli@${KL_CLI_VERSION}" deploy "$KL_DIRECTORY" \
             --project "$KL_PROJECT" \
             --json 2>"$STDERR_LOG"); then
           echo "::error title=kl deploy failed::see captured stderr below"
