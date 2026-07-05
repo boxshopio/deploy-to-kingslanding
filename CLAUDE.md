@@ -11,7 +11,7 @@ GitHub Action (composite) that deploys static sites to King's Landing via presig
 
 ## How It Works
 1. Caller provides `project`, `directory`, and `deploy-key` inputs (optional `api-url`)
-2. Action runs `npx @kingslanding/cli@^1 deploy` with the directory and project
+2. Action runs `npx @kingslanding/cli@<cli-version> deploy` with the directory and project (the `cli-version` input, default `^0.3.0`)
 3. CLI authenticates via `KL_DEPLOY_KEY` env var, uploads files to S3
 4. Outputs `deployment-id` and `project-url` via `$GITHUB_OUTPUT`
 
@@ -23,7 +23,8 @@ No test or lint commands — validation is via pre-commit hooks (prettier, gitle
 
 ## Conventions
 - Composite action — no JS/TS build step, all logic in shell
-- CLI version pinned to `@^1` (major-locked)
+- CLI version is consumer-configurable via the `cli-version` input (default `^0.3.0`, minor-locked while the CLI is pre-1.0); graduate the default to `^1` once the CLI reaches 1.0
+- The `cli-version` input flows through the `KL_CLI_VERSION` env var, never interpolated directly into the `run:` script (avoids shell/command injection)
 - Deploy key passed via environment variable, not CLI arg
 
 ## Before Committing
